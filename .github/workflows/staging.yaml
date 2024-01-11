@@ -9,6 +9,10 @@ on:
       - synchronize
       - reopened
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
 jobs:
   staging-mvn-test-build:
     name: staging mvn test and build
@@ -60,3 +64,15 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/qosocial-springboot-monolith:${{ env.PROJECT_VERSION }}-pr${{ env.PR_NUMBER }},
             ${{ secrets.DOCKERHUB_USERNAME }}/qosocial-springboot-monolith:latest
+
+  staging-deploy:
+    name: staging deploy to aws
+    runs-on: ubuntu-22.04
+    needs: docker-build-push
+    steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::881990811866:role/qosocial-springboot-monolith-github
+          role-session-name: sample-role-session
+          aws-region: "us-east-1"
