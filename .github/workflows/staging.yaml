@@ -68,7 +68,7 @@ jobs:
   staging-deploy:
     name: staging deploy to aws
     runs-on: ubuntu-22.04
-    needs: docker-build-push
+    needs: staging-docker-build-push
     steps:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v3
