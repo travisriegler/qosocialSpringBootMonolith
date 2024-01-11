@@ -76,3 +76,38 @@ jobs:
           role-to-assume: arn:aws:iam::881990811866:role/qosocial-springboot-monolith-github
           role-session-name: sample-role-session
           aws-region: "us-east-1"
+
+      - name: Trigger AWS Systems Manager Run Command
+        id: send-command
+        run: |
+          command_id=$(aws ssm send-command \
+          --document-name "qosocial-springboot-monolith-github-update-staging-EC2" \
+          --targets '[{"Key":"tag:env","Values":["staging"]}]' \
+          --timeout-seconds 600 \
+          --max-concurrency "50" \
+          --max-errors "0" \
+          --region "us-east-1" \
+          --query "Command.CommandId" \
+          --output text)
+          echo "::set-output name=command_id::$command_id"
+
+      - name: Wait for Command Execution to Complete
+        run: |
+          command_id=${{ steps.send-command.outputs.command_id }}
+          status="Pending"
+          while [[ $status == "Pending" || $status == "InProgress" || $status == "Delayed" ]]; do
+            echo "Waiting for command to complete..."
+            sleep 10
+            status=$(aws ssm list-command-invocations \
+              --command-id $command_id \
+              --details \
+              --query "CommandInvocations[*].Status" \
+              --output text \
+              --region "us-east-1")
+          done
+          if [[ $(echo $status | grep -o "Success" | wc -l) -eq $(echo $status | wc -w) ]]; then
+            echo "Command completed successfully."
+          else
+            echo "Command did not complete successfully. Status: $status"
+            exit 1
+          fi
