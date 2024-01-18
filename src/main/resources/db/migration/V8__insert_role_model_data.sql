@@ -1,0 +1,1 @@
+INSERT INTO role_model (name) VALUES ('ROLE_USER');
