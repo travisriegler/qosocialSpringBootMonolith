@@ -95,7 +95,7 @@ jobs:
         run: |
           command_id=${{ steps.send-command.outputs.command_id }}
           status="Pending"
-          while [[ $status == "Pending" || $status == "InProgress" || $status == "Delayed" ]]; do
+          while [[ $status == *"Pending"* || $status == *"InProgress"* || $status == *"Delayed"* ]]; do
             echo "Waiting for command to complete..."
             sleep 10
             status=$(aws ssm list-command-invocations \
