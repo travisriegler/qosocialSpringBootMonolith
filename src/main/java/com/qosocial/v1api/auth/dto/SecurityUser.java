@@ -16,7 +16,7 @@ public class SecurityUser implements UserDetails {
         this.appUserModel = appUserModel;
     }
 
-    public AppUserModel getJpaUserModel() {
+    public AppUserModel getAppUserModel() {
         return appUserModel;
     }
 
