@@ -1,15 +1,25 @@
 package com.qosocial.v1api.security.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Qualifier("accessTokenJwtDecoder")
+    private final JwtDecoder accessTokenJwtDecoder;
+
+    public SecurityConfig(JwtDecoder accessTokenJwtDecoder) {
+        this.accessTokenJwtDecoder = accessTokenJwtDecoder;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -19,7 +29,7 @@ public class SecurityConfig {
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
                             config.setAllowCredentials(true);
-                            config.addAllowedOriginPattern("*");
+                            config.addAllowedOriginPattern("*"); //todo: replace with config.addAllowedOrigin("https://your-frontend-domain.com")
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             return config;
@@ -31,7 +41,17 @@ public class SecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(r -> r
-                        .anyRequest().permitAll());
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/healthcheck").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .anyRequest().authenticated())
+
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.decoder(accessTokenJwtDecoder))
+                )
+
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
