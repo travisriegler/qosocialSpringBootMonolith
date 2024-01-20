@@ -29,7 +29,8 @@ public class SecurityConfig {
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
                             config.setAllowCredentials(true);
-                            config.addAllowedOriginPattern("*"); //todo: replace with config.addAllowedOrigin("https://your-frontend-domain.com")
+                            config.addAllowedOriginPattern("https://v1staging.qosocial.com");
+                            config.addAllowedOriginPattern("https://v1.qosocial.com");
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             return config;
