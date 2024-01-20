@@ -31,6 +31,7 @@ public class SecurityConfig {
                             config.setAllowCredentials(true);
                             config.addAllowedOriginPattern("https://v1staging.qosocial.com");
                             config.addAllowedOriginPattern("https://v1.qosocial.com");
+                            config.addAllowedOriginPattern("http://localhost:*");
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             return config;
