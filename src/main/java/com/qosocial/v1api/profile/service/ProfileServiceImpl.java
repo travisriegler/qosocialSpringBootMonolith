@@ -2,7 +2,6 @@ package com.qosocial.v1api.profile.service;
 
 import com.qosocial.v1api.auth.model.AppUserModel;
 import com.qosocial.v1api.auth.service.AuthService;
-import com.qosocial.v1api.common.exception.GenericSaveImageException;
 import com.qosocial.v1api.common.exception.InvalidImageException;
 import com.qosocial.v1api.common.exception.InvalidJwtSubjectException;
 import com.qosocial.v1api.common.service.ImageService;
@@ -201,7 +200,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw ex;
         } catch (Exception ex) {
             logger.error("ProfileServiceImpl getProfileDtoById caught an unexpected error", ex);
-            throw new GenericGetMyProfileException(ex);
+            throw new GenericGetProfileException(ex);
         }
     }
 
@@ -244,9 +243,9 @@ public class ProfileServiceImpl implements ProfileService {
                 imageService.deleteImage(oldPictureToDelete);
             }
 
-        } catch (InvalidJwtSubjectException | InvalidImageException | GenericSaveImageException ex) {
+        } catch (InvalidJwtSubjectException | InvalidImageException ex) {
             // InvalidJwtSubjectException will be logged at global controller exception handler
-            // InvalidImageException and GenericSaveImageException were already logged by imageService.saveImage
+            // InvalidImageException was already logged by imageService.saveImage
             throw ex;
         } catch (Exception ex) {
             logger.error("ProfileServiceImpl editMyProfile caught an unexpected error", ex);

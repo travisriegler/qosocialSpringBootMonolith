@@ -190,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
 
         } catch (GenericDeleteRefreshTokenException | GenericJwtGenerationException | GenericSaveRefreshTokenException ex) {
             //logged already
-            throw ex;
+            throw new InvalidRefreshTokenException(ex);
         } catch (Exception ex) {
             logger.error("AuthServiceImpl refreshToken caught an unexpected error", ex);
             throw new InvalidRefreshTokenException(ex);

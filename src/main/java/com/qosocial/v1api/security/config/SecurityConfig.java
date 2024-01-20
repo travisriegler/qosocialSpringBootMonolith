@@ -14,10 +14,12 @@ import org.springframework.web.cors.CorsConfiguration;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     @Qualifier("accessTokenJwtDecoder")
     private final JwtDecoder accessTokenJwtDecoder;
 
-    public SecurityConfig(JwtDecoder accessTokenJwtDecoder) {
+    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, JwtDecoder accessTokenJwtDecoder) {
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.accessTokenJwtDecoder = accessTokenJwtDecoder;
     }
 
@@ -50,6 +52,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
 
                 .oauth2ResourceServer(oauth2 -> oauth2
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .jwt(jwt -> jwt.decoder(accessTokenJwtDecoder))
                 )
 
