@@ -12,6 +12,8 @@ public class PostDto {
 
     private String profileUsername;
 
+    private String pictureUrl;
+
     private Instant createdAt;
 
     private boolean deleted;
@@ -21,13 +23,14 @@ public class PostDto {
     public PostDto() {
     }
 
-    public PostDto(Long id, String textContent, boolean isMyPost, Instant createdAt, Long profileId, String profileUsername, boolean deleted, String mediaUrl) {
+    public PostDto(Long id, String textContent, boolean isMyPost, Instant createdAt, Long profileId, String profileUsername, String pictureUrl, boolean deleted, String mediaUrl) {
         this.id = id;
         this.textContent = textContent;
         this.isMyPost = isMyPost;
         this.createdAt = createdAt;
         this.profileId = profileId;
         this.profileUsername = profileUsername;
+        this.pictureUrl = pictureUrl;
         this.deleted = deleted;
         this.mediaUrl = mediaUrl;
     }
@@ -48,20 +51,12 @@ public class PostDto {
         this.textContent = textContent;
     }
 
-    public Boolean isMyPost() {
+    public boolean isMyPost() {
         return isMyPost;
     }
 
-    public void setIsMyPost(Boolean isMyPost) {
+    public void setIsMyPost(boolean isMyPost) {
         this.isMyPost = isMyPost;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 
     public Long getProfileId() {
@@ -80,6 +75,22 @@ public class PostDto {
         this.profileUsername = profileUsername;
     }
 
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -92,7 +103,7 @@ public class PostDto {
         return mediaUrl;
     }
 
-    public void setPictureUrl(String mediaUrl) {
+    public void setMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
     }
 }
