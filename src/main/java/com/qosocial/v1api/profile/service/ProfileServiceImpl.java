@@ -4,8 +4,9 @@ import com.qosocial.v1api.auth.model.AppUserModel;
 import com.qosocial.v1api.auth.service.AuthService;
 import com.qosocial.v1api.common.exception.InvalidImageException;
 import com.qosocial.v1api.common.exception.InvalidJwtSubjectException;
+import com.qosocial.v1api.common.service.CommonService;
 import com.qosocial.v1api.common.service.ImageService;
-import com.qosocial.v1api.common.util.CommonUtil;
+import com.qosocial.v1api.common.service.CommonServiceImpl;
 import com.qosocial.v1api.profile.dto.CreateProfileDto;
 import com.qosocial.v1api.profile.dto.EditProfileDto;
 import com.qosocial.v1api.profile.dto.ProfileDto;
@@ -31,17 +32,19 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final AuthService authService;
     private final ImageService imageService;
+    private final CommonService commonService;
     private static final Logger logger = LoggerFactory.getLogger(ProfileServiceImpl.class);
 
     @Value("${base.url}")
     private String baseUrl;
 
     @Autowired
-    public ProfileServiceImpl(ProfileMapper profileMapper, ProfileRepository profileRepository, AuthService authService, ImageService imageService) {
+    public ProfileServiceImpl(ProfileMapper profileMapper, ProfileRepository profileRepository, AuthService authService, ImageService imageService, CommonService commonService) {
         this.profileMapper = profileMapper;
         this.profileRepository = profileRepository;
         this.authService = authService;
         this.imageService = imageService;
+        this.commonService = commonService;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
         try {
 
             // Get the Long userId from jwtToken
-            userId = CommonUtil.getLongUserId(jwtToken);
+            userId = commonService.getLongUserId(jwtToken);
 
             // Check if they have a profile already (currently only allowed 1 profile)
             if (profileRepository.existsByAppUserModel_Id(userId)) { throw new ProfileAlreadyExistsException(); }
@@ -103,7 +106,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             // Get the Long userId from jwtToken
-            myUserId = CommonUtil.getLongUserId(jwtToken);
+            myUserId = commonService.getLongUserId(jwtToken);
 
             // Call profileRepository to find a profile associated with the userId
             ProfileModel myProfileModel = profileRepository.findFirstByAppUserModel_Id(myUserId).orElseThrow(() -> new ProfileNotFoundException());
@@ -137,7 +140,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             // Get the Long userId from jwtToken
-            myUserId = CommonUtil.getLongUserId(jwtToken);
+            myUserId = commonService.getLongUserId(jwtToken);
 
             // Call profileRepository to find a profile associated with the userId. Could throw ProfileNotFoundException
             return profileRepository.findFirstByAppUserModel_Id(myUserId).orElseThrow(() -> new ProfileNotFoundException());
@@ -162,7 +165,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             // Get the Long userId from jwtToken
-            myUserId = CommonUtil.getLongUserId(jwtToken);
+            myUserId = commonService.getLongUserId(jwtToken);
 
             // Call profileRepository to find a profile associated with the userId. Could throw ProfileNotFoundException
             ProfileModel myProfileModel = profileRepository.findFirstByAppUserModel_Id(myUserId).orElseThrow(() -> new ProfileNotFoundException());
@@ -210,7 +213,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             // Get the Long userId from jwtToken
-            Long myUserId = CommonUtil.getLongUserId(jwtToken);
+            Long myUserId = commonService.getLongUserId(jwtToken);
 
             // Find myProfileModel
             ProfileModel myProfileModel = profileRepository.findFirstByAppUserModel_Id(myUserId).orElseThrow(() -> new ProfileNotFoundException());

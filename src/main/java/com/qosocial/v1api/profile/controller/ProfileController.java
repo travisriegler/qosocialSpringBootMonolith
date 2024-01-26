@@ -1,6 +1,7 @@
 package com.qosocial.v1api.profile.controller;
 
-import com.qosocial.v1api.common.util.CommonUtil;
+import com.qosocial.v1api.common.service.CommonService;
+import com.qosocial.v1api.common.service.CommonServiceImpl;
 import com.qosocial.v1api.profile.dto.CreateProfileDto;
 import com.qosocial.v1api.profile.dto.EditProfileDto;
 import com.qosocial.v1api.profile.dto.ProfileDto;
@@ -19,10 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final CommonService commonService;
 
     @Autowired
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, CommonService commonService) {
         this.profileService = profileService;
+        this.commonService = commonService;
     }
 
     @PostMapping()
@@ -34,10 +37,10 @@ public class ProfileController {
          */
 
         // validate the imageFile
-        CommonUtil.validateImageFile(imageFile);
+        commonService.validateImageFile(imageFile);
 
         // Safely checks authentication and jwtToken to ensure they are not null
-        Jwt jwtToken = CommonUtil.getJwt(authentication);
+        Jwt jwtToken = commonService.getJwt(authentication);
 
         // Call profileService
         profileService.createProfile(jwtToken, createProfileDto, imageFile);
@@ -49,7 +52,7 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication) {
 
         // Safely checks authentication and jwtToken to ensure they are not null
-        Jwt jwtToken = CommonUtil.getJwt(authentication);
+        Jwt jwtToken = commonService.getJwt(authentication);
 
         // Call profileService
         ProfileDto profileDto = profileService.getMyProfileDto(jwtToken);
@@ -63,7 +66,7 @@ public class ProfileController {
 
         // Safely checks authentication and jwtToken to ensure they are not null
         // Performing this check even though the jwtToken is not used just in case the jwtToken is invalid
-        Jwt jwtToken = CommonUtil.getJwt(authentication);
+        Jwt jwtToken = commonService.getJwt(authentication);
 
         // Call profileService
         ProfileDto profileDto = profileService.getProfileDtoById(id);
@@ -81,10 +84,10 @@ public class ProfileController {
          */
 
         // validate the imageFile
-        CommonUtil.validateImageFile(imageFile);
+        commonService.validateImageFile(imageFile);
 
         // Safely checks authentication and jwtToken to ensure they are not null
-        Jwt jwtToken = CommonUtil.getJwt(authentication);
+        Jwt jwtToken = commonService.getJwt(authentication);
 
         // Call profileService
         profileService.editMyProfile(jwtToken, editProfileDto, imageFile);
