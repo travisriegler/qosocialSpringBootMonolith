@@ -1,18 +1,25 @@
-package com.qosocial.v1api.common.util;
+package com.qosocial.v1api.common.service;
 
 import com.qosocial.v1api.common.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 import java.util.List;
 
-public class CommonUtil {
+@Service
+public class CommonServiceImpl implements CommonService{
 
-    public static Jwt getJwt(Authentication authentication) {
+    private static final Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
+
+    @Override
+    public Jwt getJwt(Authentication authentication) {
 
         // Check if authentication is null
         if (authentication == null) {
@@ -48,7 +55,8 @@ public class CommonUtil {
         return jwtToken;
     }
 
-    public static Long getLongUserId(Jwt jwtToken) {
+    @Override
+    public Long getLongUserId(Jwt jwtToken) {
         // Get the subject from jwtToken
         String stringUserId = jwtToken.getSubject();
 
@@ -61,7 +69,8 @@ public class CommonUtil {
         return Long.parseLong(stringUserId);
     }
 
-    public static void validateImageFile(MultipartFile imageFile) {
+    @Override
+    public void validateImageFile(MultipartFile imageFile) {
 
         // images are optional. If we are not given an image, that is fine.
         //But if we are given an image and there is an issue with it, we need to throw an exception
