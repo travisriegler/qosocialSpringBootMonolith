@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qosocial.v1api.common.service.CommonService;
 import com.qosocial.v1api.post.dto.CreatePostDto;
 import com.qosocial.v1api.post.dto.PostDto;
+import com.qosocial.v1api.post.dto.UpdateDeletedDto;
 import com.qosocial.v1api.post.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,7 +264,7 @@ public class PostControllerTest {
 
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
-        String limit = "500";
+        String limit = "11";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
         when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
         when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken)).thenReturn(expectedPosts);
@@ -287,7 +288,7 @@ public class PostControllerTest {
 
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
-        String limit = "-500";
+        String limit = "0";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
         when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
         when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken)).thenReturn(expectedPosts);
@@ -378,5 +379,126 @@ public class PostControllerTest {
     }
 
     // Choosing to skip tests for getPostsByProfileId because it is nearly identical to getAllPosts
+
+
+    @Test
+    void updateDeletePostById_ValidTrueArguments_ReturnsSuccessStatus() throws Exception {
+        // Mocked resources: postService, jwtToken, commonService,
+
+        // Arrange
+        Long testId = 1L;
+        UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(true);
+        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
+        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
+
+        String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeletedDtoJson)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verify
+        verify(commonService).getJwt(any(Authentication.class));
+        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+    }
+
+    @Test
+    void updateDeletePostById_ValidFalseArguments_ReturnsSuccessStatus() throws Exception {
+        // Mocked resources: postService, jwtToken, commonService,
+
+        // Arrange
+        Long testId = 1L;
+        UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(false);
+        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
+        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
+
+        String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeletedDtoJson)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verify
+        verify(commonService).getJwt(any(Authentication.class));
+        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+    }
+
+    @Test
+    void updateDeletePostById_InvalidMissingBoolean_ReturnsSuccessStatus() throws Exception {
+        // Mocked resources: postService, jwtToken, commonService,
+
+        // Arrange
+        Long testId = 1L;
+
+        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
+        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
+
+        String updateDeletedDtoJson = "{}";
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeletedDtoJson)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verify
+        verify(commonService).getJwt(any(Authentication.class));
+        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+    }
+
+    @Test
+    void updateDeletePostById_InvalidBoolean_ReturnsBadRequestStatus() throws Exception {
+        // Mocked resources: postService, jwtToken, commonService,
+
+        // Arrange
+        Long testId = 1L;
+
+        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
+        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
+
+        String updateDeletedDtoJson = "{\"wantsToDelete\": \"asdasdasdadasdasd\"}";
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeletedDtoJson)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        // Verify
+        verify(commonService, never()).getJwt(any(Authentication.class));
+        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+    }
+
+    @Test
+    void updateDeletePostById_InvalidId_ReturnsBadRequestStatus() throws Exception {
+        // Mocked resources: postService, jwtToken, commonService,
+
+        // Arrange
+        Long testId = 0L;
+        UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(false);
+        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
+        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
+
+        String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeletedDtoJson)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()))
+                        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        // Verify
+        verify(commonService, never()).getJwt(any(Authentication.class));
+        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+    }
 
 }
