@@ -4,6 +4,7 @@ import com.qosocial.v1api.common.service.CommonService;
 import com.qosocial.v1api.post.dto.CreatePostDto;
 import com.qosocial.v1api.post.dto.PostDto;
 import com.qosocial.v1api.post.dto.UpdateDeletedDto;
+import com.qosocial.v1api.post.exception.InvalidPostIdException;
 import com.qosocial.v1api.post.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,11 @@ public class PostController {
 
     @PatchMapping("/delete/{id}")
     public ResponseEntity<Void> updateDeletePostById(@RequestBody @Validated UpdateDeletedDto updateDeletedDto, @PathVariable Long id, Authentication authentication) {
+
+        // Check if id is null or less than or equal to 0
+        if (id == null || id <= 0) {
+            throw new InvalidPostIdException();
+        }
 
         // Safely checks authentication and jwtToken to ensure they are not null
         Jwt jwtToken = commonService.getJwt(authentication);

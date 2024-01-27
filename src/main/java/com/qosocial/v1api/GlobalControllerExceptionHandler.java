@@ -230,6 +230,12 @@ public class GlobalControllerExceptionHandler {
         return new ResponseEntity<>(errorResponseDto, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(InvalidPostIdException.class)
+    public ResponseEntity<Object> invalidPostIdException(InvalidPostIdException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+    }
+
     //--------------------------END POST EXCEPTIONS----------------------------------------------
 
     //--------------------------START MISC EXCEPTIONS--------------------------------------------
