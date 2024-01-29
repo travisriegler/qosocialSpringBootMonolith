@@ -34,26 +34,27 @@ public class PostControllerTest {
     private CommonService commonService;
     @MockBean
     private Jwt jwtToken;
-
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     private static final int DEFAULT_LIMIT = 10;
     private static final int MAX_TEXT_CONTENT = 200;
     private static final int MIN_TEXT_CONTENT = 1;
 
     @Test
     void createPost_ValidArguments_ReturnsCreatedStatus() throws Exception {
-        // Mocked resources: postService, commonService, jwtToken
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         createPostDto.setTextContent("Valid new post request");
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+
+        doNothing()
+                .when(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
@@ -63,68 +64,70 @@ public class PostControllerTest {
                         .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).createPost(any(CreatePostDto.class), eq(jwtToken));
     }
 
     @Test
     void createPost_ValidMaxTextLimit_ReturnsCreatedStatus() throws Exception {
-        // Mocked resources: postService, commonService, jwtToken
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         createPostDto.setTextContent("a".repeat(MAX_TEXT_CONTENT));
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+
+        doNothing()
+                .when(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createPostDtoJson)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                        .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).createPost(any(CreatePostDto.class), eq(jwtToken));
     }
 
     @Test
     void createPost_ValidMinTextLimit_ReturnsCreatedStatus() throws Exception {
-        // Mocked resources: postService, commonService, jwtToken
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         createPostDto.setTextContent("a".repeat(MIN_TEXT_CONTENT));
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        doNothing()
+                .when(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createPostDtoJson)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                        .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).createPost(any(CreatePostDto.class), eq(jwtToken));
     }
 
     @Test
     void createPost_InvalidLargeTextContent_ReturnsBadRequest() throws Exception {
-        // Mocked resources: postService, commonService, jwtToken
+        // Mocked resources: commonService, postService
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         createPostDto.setTextContent("a".repeat(MAX_TEXT_CONTENT + 1));
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
 
         // Act and Assert
@@ -136,19 +139,16 @@ public class PostControllerTest {
 
         // Verify
         verify(commonService, never()).getJwt(any(Authentication.class));
-        verify(postService, never()).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(postService, never()).createPost(any(CreatePostDto.class), any(Jwt.class));
     }
 
     @Test
     void createPost_InvalidSmallTextContent_ReturnsBadRequest() throws Exception {
-        // Mocked resources: postService, commonService, jwtToken
+        // Mocked resources: commonService, postService
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         createPostDto.setTextContent("");
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
 
         // Act and Assert
@@ -160,7 +160,7 @@ public class PostControllerTest {
 
         // Verify
         verify(commonService, never()).getJwt(any(Authentication.class));
-        verify(postService, never()).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(postService, never()).createPost(any(CreatePostDto.class), any(Jwt.class));
     }
 
     @Test
@@ -169,9 +169,6 @@ public class PostControllerTest {
 
         // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.createPost returns nothing, so no need to construct when() for it
-
         String createPostDtoJson = objectMapper.writeValueAsString(createPostDto);
 
         // Act and Assert
@@ -183,7 +180,7 @@ public class PostControllerTest {
 
         // Verify
         verify(commonService, never()).getJwt(any(Authentication.class));
-        verify(postService, never()).createPost(any(CreatePostDto.class), eq(jwtToken));
+        verify(postService, never()).createPost(any(CreatePostDto.class), any(Jwt.class));
     }
 
     @Test
@@ -194,8 +191,11 @@ public class PostControllerTest {
         String offset = "2024-01-25T00:00:00Z";
         String limit = "5";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
@@ -206,192 +206,225 @@ public class PostControllerTest {
                         .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
     }
 
     @Test
     void getAllPosts_InvalidOffset_ReturnsPostDtos() throws Exception {
         // Mocked resources: commonService, jwtToken, postService
 
+        // with an invalid offset, the controller should default to Instant.now() and proceed
+
         // Arrange
         String offset = "bad offset";
         String limit = "5";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken))).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken)))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken));
     }
 
     @Test
     void getAllPosts_NullOffset_ReturnsPostDtos() throws Exception {
         // Mocked resources: commonService, jwtToken, postService
 
+        // with a null offset, the controller should default to Instant.now() and proceed
+
         // Arrange
         String offset = null;
         String limit = "5";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken))).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken)))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(any(Instant.class), eq(Integer.parseInt(limit)), eq(jwtToken));
     }
 
     @Test
     void getAllPosts_InvalidLargeLimit_ReturnsPostDtos() throws Exception {
         // Mocked resources: commonService, jwtToken, postService
 
+        // With an invalid large limit, the controller should default to 10 and proceed
+
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
         String limit = "11";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
     }
 
     @Test
     void getAllPosts_InvalidSmallLimit_ReturnsPostDtos() throws Exception {
         // Mocked resources: commonService, jwtToken, postService
 
+        // With an invalid small limit, the controller should default to 10 and proceed
+
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
         String limit = "0";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
     }
 
     @Test
     void getAllPosts_NullLimit_ReturnsPostDtos() throws Exception {
         // Mocked resources: commonService, jwtToken, postService
 
+        // With an invalid null limit, the controller should default to 10 and proceed
+
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
         String limit = null;
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), DEFAULT_LIMIT, jwtToken);
     }
 
     @Test
     void getAllPosts_MinLimit_ReturnsPostDtos() throws Exception {
-                // Mocked resources: commonService, jwtToken, postService
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
         String limit = "1";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
     }
 
     @Test
     void getAllPosts_MaxLimit_ReturnsPostDtos() throws Exception {
-                // Mocked resources: commonService, jwtToken, postService
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         String offset = "2024-01-25T00:00:00Z";
         String limit = "10";
         List<PostDto> expectedPosts = Arrays.asList(new PostDto(), new PostDto());
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken)).thenReturn(expectedPosts);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        when(postService.getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken))
+                .thenReturn(expectedPosts);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                         .param("offset", offset)
                         .param("limit", limit)
                         .with(SecurityMockMvcRequestPostProcessors.jwt()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(expectedPosts)));
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).getAllPosts(Instant.parse(offset), Integer.parseInt(limit), jwtToken);
     }
 
     // Choosing to skip tests for getPostsByProfileId because it is nearly identical to getAllPosts
 
-
     @Test
     void updateDeletePostById_ValidTrueArguments_ReturnsSuccessStatus() throws Exception {
-        // Mocked resources: postService, jwtToken, commonService,
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         Long testId = 1L;
         UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(true);
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
-
         String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+
+        doNothing()
+                .when(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
@@ -401,21 +434,23 @@ public class PostControllerTest {
                         .andExpect(MockMvcResultMatchers.status().isOk());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
     }
 
     @Test
     void updateDeletePostById_ValidFalseArguments_ReturnsSuccessStatus() throws Exception {
-        // Mocked resources: postService, jwtToken, commonService,
+        // Mocked resources: commonService, jwtToken, postService
 
         // Arrange
         Long testId = 1L;
         UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(false);
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
-
         String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        doNothing()
+                .when(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
@@ -425,21 +460,24 @@ public class PostControllerTest {
                         .andExpect(MockMvcResultMatchers.status().isOk());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
     }
 
     @Test
     void updateDeletePostById_InvalidMissingBoolean_ReturnsSuccessStatus() throws Exception {
-        // Mocked resources: postService, jwtToken, commonService,
+        // Mocked resources: commonService, jwtToken, postService
+
+        // should still return success because wantsToDelete is boolean, and no value defaults to false
 
         // Arrange
         Long testId = 1L;
-
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
-
         String updateDeletedDtoJson = "{}";
+
+        when(commonService.getJwt(any(Authentication.class)))
+                .thenReturn(jwtToken);
+        doNothing()
+                .when(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.patch("/posts/delete/" + testId)
@@ -449,20 +487,16 @@ public class PostControllerTest {
                         .andExpect(MockMvcResultMatchers.status().isOk());
 
         // Verify
-        verify(commonService).getJwt(any(Authentication.class));
-        verify(postService).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+        verify(commonService, times(1)).getJwt(any(Authentication.class));
+        verify(postService, times(1)).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
     }
 
     @Test
     void updateDeletePostById_InvalidBoolean_ReturnsBadRequestStatus() throws Exception {
-        // Mocked resources: postService, jwtToken, commonService,
+        // Mocked resources: commonService, postService
 
         // Arrange
         Long testId = 1L;
-
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
-
         String updateDeletedDtoJson = "{\"wantsToDelete\": \"asdasdasdadasdasd\"}";
 
         // Act and Assert
@@ -474,19 +508,16 @@ public class PostControllerTest {
 
         // Verify
         verify(commonService, never()).getJwt(any(Authentication.class));
-        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), any(Long.class), any(Jwt.class));
     }
 
     @Test
     void updateDeletePostById_InvalidId_ReturnsBadRequestStatus() throws Exception {
-        // Mocked resources: postService, jwtToken, commonService,
+        /// Mocked resources: commonService, postService
 
         // Arrange
         Long testId = 0L;
         UpdateDeletedDto updateDeletedDto = new UpdateDeletedDto(false);
-        when(commonService.getJwt(any(Authentication.class))).thenReturn(jwtToken);
-        //postService.updateDeletePostById returns nothing, so no need to construct when() for it
-
         String updateDeletedDtoJson = objectMapper.writeValueAsString(updateDeletedDto);
 
         // Act and Assert
@@ -498,7 +529,7 @@ public class PostControllerTest {
 
         // Verify
         verify(commonService, never()).getJwt(any(Authentication.class));
-        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), eq(testId), eq(jwtToken));
+        verify(postService, never()).updateDeletePostById(any(UpdateDeletedDto.class), any(Long.class), any(Jwt.class));
     }
 
 }
