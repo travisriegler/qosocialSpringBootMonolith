@@ -32,6 +32,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,17 +53,21 @@ public class PostServiceImplTest {
     @Mock
     private Jwt jwtToken;
 
-
-
     @Test
     void createPost_ValidArguments_ReturnsVoid() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         PostModel postModel = new PostModel();
         ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenReturn(postModel);
-        when(profileService.getMyProfileModel(jwtToken)).thenReturn(profileModel);
-        // postRepository does not return a value, so no need to do when() for it
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenReturn(postModel);
+        when(profileService.getMyProfileModel(jwtToken))
+                .thenReturn(profileModel);
+        when(postRepository.save(postModel))
+                .thenReturn(new PostModel());
 
         // Act
         postService.createPost(createPostDto, jwtToken);
@@ -71,83 +76,101 @@ public class PostServiceImplTest {
         assertThat(postModel.getProfileModel()).isEqualTo(profileModel);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
-        verify(profileService).getMyProfileModel(jwtToken);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, times(1)).getMyProfileModel(jwtToken);
         verify(postRepository, times(1)).save(postModel);
 
     }
 
     @Test
-    void createPost_InvalidJwtSubject_ThrowsInvalidJwtSubjectException() throws Exception {
+    void createPost_InvalidJwtSubjectException_ThrowsInvalidJwtSubjectException() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         PostModel postModel = new PostModel();
-        ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenReturn(postModel);
-        when(profileService.getMyProfileModel(jwtToken)).thenThrow(InvalidJwtSubjectException.class);
-        // postRepository does not return a value, so no need to do when() for it
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenReturn(postModel);
+        when(profileService.getMyProfileModel(jwtToken))
+                .thenThrow(InvalidJwtSubjectException.class);
 
         // Act and Assert
         assertThatThrownBy(() -> postService.createPost(createPostDto, jwtToken))
                 .isInstanceOf(InvalidJwtSubjectException.class);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
-        verify(profileService).getMyProfileModel(jwtToken);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, times(1)).getMyProfileModel(jwtToken);
+        verify(postRepository, never()).save(any(PostModel.class));
 
     }
 
     @Test
-    void createPost_ProfileNotFoundException_ThrowsInvalidJwtSubjectException() throws Exception {
+    void createPost_ProfileNotFoundException_ThrowsGenericCreatePostException() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         PostModel postModel = new PostModel();
-        ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenReturn(postModel);
-        when(profileService.getMyProfileModel(jwtToken)).thenThrow(ProfileNotFoundException.class);
-        // postRepository does not return a value, so no need to do when() for it
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenReturn(postModel);
+        when(profileService.getMyProfileModel(jwtToken))
+                .thenThrow(ProfileNotFoundException.class);
 
         // Act and Assert
         assertThatThrownBy(() -> postService.createPost(createPostDto, jwtToken))
                 .isInstanceOf(GenericCreatePostException.class);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
-        verify(profileService).getMyProfileModel(jwtToken);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, times(1)).getMyProfileModel(jwtToken);
+        verify(postRepository, never()).save(any(PostModel.class));
 
     }
 
     @Test
-    void createPost_GenericCreatePostException_ThrowsInvalidJwtSubjectException() throws Exception {
+    void createPost_GenericGetMyProfileException_ThrowsGenericCreatePostException() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         PostModel postModel = new PostModel();
-        ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenReturn(postModel);
-        when(profileService.getMyProfileModel(jwtToken)).thenThrow(GenericGetMyProfileException.class);
-        // postRepository does not return a value, so no need to do when() for it
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenReturn(postModel);
+        when(profileService.getMyProfileModel(jwtToken))
+                .thenThrow(GenericGetMyProfileException.class);
 
         // Act and Assert
         assertThatThrownBy(() -> postService.createPost(createPostDto, jwtToken))
                 .isInstanceOf(GenericCreatePostException.class);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
-        verify(profileService).getMyProfileModel(jwtToken);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, times(1)).getMyProfileModel(jwtToken);
+        verify(postRepository, never()).save(any(PostModel.class));
 
     }
 
     @Test
     void createPost_DataIntegrityViolationException_ThrowsGenericCreatePostException() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
         PostModel postModel = new PostModel();
         ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenReturn(postModel);
-        when(profileService.getMyProfileModel(jwtToken)).thenReturn(profileModel);
-        when(postRepository.save(postModel)).thenThrow(new DataIntegrityViolationException("Database error"));
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenReturn(postModel);
+        when(profileService.getMyProfileModel(jwtToken))
+                .thenReturn(profileModel);
+        when(postRepository.save(postModel))
+                .thenThrow(new DataIntegrityViolationException("Database error"));
 
-        // Act
+        // Act and Assert
         assertThatThrownBy(() -> postService.createPost(createPostDto, jwtToken))
                 .isInstanceOf(GenericCreatePostException.class);
 
@@ -155,26 +178,30 @@ public class PostServiceImplTest {
         assertThat(postModel.getProfileModel()).isEqualTo(profileModel);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
-        verify(profileService).getMyProfileModel(jwtToken);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, times(1)).getMyProfileModel(jwtToken);
         verify(postRepository, times(1)).save(postModel);
 
     }
 
     @Test
     void createPost_NullPointerException_ThrowsGenericCreatePostException() throws Exception {
+        // Mocked resources: postMapper, profileService, jwtToken, postRepository
+
+        // Arrange
         CreatePostDto createPostDto = new CreatePostDto();
-        PostModel postModel = new PostModel();
-        ProfileModel profileModel = new ProfileModel();
 
-        when(postMapper.fromCreatePostDtoToPostModel(createPostDto)).thenThrow(new NullPointerException("Null value"));
+        when(postMapper.fromCreatePostDtoToPostModel(createPostDto))
+                .thenThrow(new NullPointerException("Null value"));
 
-        // Act
+        // Act and Assert
         assertThatThrownBy(() -> postService.createPost(createPostDto, jwtToken))
                 .isInstanceOf(GenericCreatePostException.class);
 
         // Verify
-        verify(postMapper).fromCreatePostDtoToPostModel(createPostDto);
+        verify(postMapper, times(1)).fromCreatePostDtoToPostModel(createPostDto);
+        verify(profileService, never()).getMyProfileModel(any(Jwt.class));
+        verify(postRepository, never()).save(any(PostModel.class));
 
     }
 
@@ -189,8 +216,10 @@ public class PostServiceImplTest {
         List<PostModel> expectedPostModels = Arrays.asList(new PostModel(), new PostModel());
         List<PostDto> expectedPostDtos = Arrays.asList(new PostDto(), new PostDto());
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenReturn(myProfileId);
-        when(postRepository.findMyPostsAndOthersNotDeletedBeforeTimestamp(eq(myProfileId), eq(timestamp), any(Pageable.class))).thenReturn(expectedPostModels);
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenReturn(myProfileId);
+        when(postRepository.findMyPostsAndOthersNotDeletedBeforeTimestamp(eq(myProfileId), eq(timestamp), any(Pageable.class)))
+                .thenReturn(expectedPostModels);
         when(postMapper.fromPostModelToPostDto(any(PostModel.class), eq(myProfileId)))
                 .thenAnswer(invocation -> Optional.of(new PostDto()));
 
@@ -214,7 +243,8 @@ public class PostServiceImplTest {
         Instant timestamp = Instant.now();
         int limit = 5;
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenThrow(InvalidJwtSubjectException.class);
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenThrow(InvalidJwtSubjectException.class);
 
         // Act and Assert
         assertThatThrownBy(() -> postService.getAllPosts(timestamp, limit, jwtToken))
@@ -234,7 +264,8 @@ public class PostServiceImplTest {
         Instant timestamp = Instant.now();
         int limit = 5;
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenThrow(ProfileNotFoundException.class);
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenThrow(ProfileNotFoundException.class);
 
         // Act and Assert
         assertThatThrownBy(() -> postService.getAllPosts(timestamp, limit, jwtToken))
@@ -301,10 +332,11 @@ public class PostServiceImplTest {
         PostModel goodPostModel = new PostModel();
         PostModel badPostModel = new PostModel();
         List<PostModel> expectedPostModels = Arrays.asList(goodPostModel, badPostModel);
-        List<PostDto> expectedPostDtos = Arrays.asList(new PostDto(), new PostDto());
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenReturn(myProfileId);
-        when(postRepository.findMyPostsAndOthersNotDeletedBeforeTimestamp(eq(myProfileId), eq(timestamp), any(Pageable.class))).thenReturn(expectedPostModels);
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenReturn(myProfileId);
+        when(postRepository.findMyPostsAndOthersNotDeletedBeforeTimestamp(eq(myProfileId), eq(timestamp), any(Pageable.class)))
+                .thenReturn(expectedPostModels);
         when(postMapper.fromPostModelToPostDto(eq(goodPostModel), eq(myProfileId)))
                 .thenReturn(Optional.of(new PostDto()));
         when(postMapper.fromPostModelToPostDto(eq(badPostModel), eq(myProfileId)))
@@ -336,23 +368,26 @@ public class PostServiceImplTest {
         ProfileModel myProfileModel = new ProfileModel();
         myProfileModel.setId(myProfileId);
 
-        PostModel expectedPostModel = new PostModel();
-        expectedPostModel.setProfileModel(myProfileModel);
+        PostModel postModel = new PostModel();
+        postModel.setProfileModel(myProfileModel);
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenReturn(myProfileId);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(expectedPostModel));
-        //postRepository.save returns void, so no need to call when()
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenReturn(myProfileId);
+        when(postRepository.findById(postId))
+                .thenReturn(Optional.of(postModel));
+        when(postRepository.save(postModel))
+                .thenReturn(new PostModel());
 
         // Act
         postService.updateDeletePostById(updateDeletedDto, postId, jwtToken);
 
         // Assert
-        assertEquals(updateDeletedDto.getWantsToDelete(), expectedPostModel.isDeleted());
+        assertEquals(updateDeletedDto.getWantsToDelete(), postModel.isDeleted());
 
         // Verify
         verify(profileService, times(1)).getMyProfileModelId(jwtToken);
         verify(postRepository, times(1)).findById(postId);
-        verify(postRepository, times(1)).save(expectedPostModel);
+        verify(postRepository, times(1)).save(postModel);
     }
 
     @Test
@@ -367,23 +402,26 @@ public class PostServiceImplTest {
         ProfileModel myProfileModel = new ProfileModel();
         myProfileModel.setId(myProfileId);
 
-        PostModel expectedPostModel = new PostModel();
-        expectedPostModel.setProfileModel(myProfileModel);
+        PostModel postModel = new PostModel();
+        postModel.setProfileModel(myProfileModel);
 
-        when(profileService.getMyProfileModelId(jwtToken)).thenReturn(myProfileId);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(expectedPostModel));
-        //postRepository.save returns void, so no need to call when()
+        when(profileService.getMyProfileModelId(jwtToken))
+                .thenReturn(myProfileId);
+        when(postRepository.findById(postId))
+                .thenReturn(Optional.of(postModel));
+        when(postRepository.save(postModel))
+                .thenReturn(new PostModel());
 
         // Act
         postService.updateDeletePostById(updateDeletedDto, postId, jwtToken);
 
         // Assert
-        assertEquals(updateDeletedDto.getWantsToDelete(), expectedPostModel.isDeleted());
+        assertEquals(updateDeletedDto.getWantsToDelete(), postModel.isDeleted());
 
         // Verify
         verify(profileService, times(1)).getMyProfileModelId(jwtToken);
         verify(postRepository, times(1)).findById(postId);
-        verify(postRepository, times(1)).save(expectedPostModel);
+        verify(postRepository, times(1)).save(postModel);
     }
 
     @Test
@@ -400,19 +438,23 @@ public class PostServiceImplTest {
         ProfileModel postProfileModel = new ProfileModel();
         postProfileModel.setId(postProfileId);
 
-        PostModel expectedPostModel = new PostModel();
-        expectedPostModel.setProfileModel(postProfileModel);
+        PostModel postModel = new PostModel();
+        postModel.setProfileModel(postProfileModel);
+        postModel.setDeleted(false);
 
         when(profileService.getMyProfileModelId(jwtToken)).thenReturn(myProfileId);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(expectedPostModel));
-        //postRepository.save returns void, so no need to call when()
+        when(postRepository.findById(postId)).thenReturn(Optional.of(postModel));
 
         // Act and Assert
         assertThatThrownBy(() -> postService.updateDeletePostById(updateDeletedDto, postId, jwtToken))
                 .isInstanceOf(UnauthorizedToModifyPostException.class);
 
+        assertNotEquals(updateDeletedDto.getWantsToDelete(), postModel.isDeleted());
+
         // Verify
         verify(profileService, times(1)).getMyProfileModelId(jwtToken);
         verify(postRepository, times(1)).findById(postId);
+        verify(postRepository, never()).save(any(PostModel.class));
+
     }
 }
