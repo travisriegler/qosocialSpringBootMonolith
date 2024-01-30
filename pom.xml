@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.qosocial</groupId>
 	<artifactId>v1-api</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<name>v1-api</name>
 	<description>qo social v1 api</description>
 	<properties>
