@@ -201,6 +201,12 @@ public class GlobalControllerExceptionHandler {
         return new ResponseEntity<>(errorResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(GenericGetProfilesException.class)
+    public ResponseEntity<Object> genericGetProfilesException(GenericGetProfilesException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     //--------------------------END PROFILE EXCEPTIONS----------------------------------------------
 
     //--------------------------START POST EXCEPTIONS--------------------------------------------
