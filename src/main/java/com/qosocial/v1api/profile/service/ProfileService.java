@@ -7,8 +7,13 @@ import com.qosocial.v1api.profile.model.ProfileModel;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.util.List;
+
 public interface ProfileService {
     public void createProfile(Jwt jwtToken, CreateProfileDto createProfileDto, MultipartFile imageFile);
+
+    public List<ProfileDto> getAllProfiles(Instant timeStamp, int limit, Jwt jwtToken);
 
     public ProfileDto getMyProfileDto(Jwt jwtToken);
 

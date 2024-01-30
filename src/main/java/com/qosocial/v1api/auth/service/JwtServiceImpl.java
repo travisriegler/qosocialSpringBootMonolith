@@ -40,7 +40,8 @@ public class JwtServiceImpl implements JwtService {
     public String generateAccessToken(Long id, String email, Set<RoleModel> roles) {
         try {
             Instant now = Instant.now();
-            Instant later = now.plus(Duration.ofMinutes(5));
+            //todo:change 1 back to 5
+            Instant later = now.plus(Duration.ofMinutes(1));
 
             String scope = roles.stream()
                     .map(RoleModel::getName)
