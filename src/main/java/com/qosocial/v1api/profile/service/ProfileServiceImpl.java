@@ -6,7 +6,6 @@ import com.qosocial.v1api.common.exception.InvalidImageException;
 import com.qosocial.v1api.common.exception.InvalidJwtSubjectException;
 import com.qosocial.v1api.common.service.CommonService;
 import com.qosocial.v1api.common.service.ImageService;
-import com.qosocial.v1api.common.service.CommonServiceImpl;
 import com.qosocial.v1api.profile.dto.CreateProfileDto;
 import com.qosocial.v1api.profile.dto.EditProfileDto;
 import com.qosocial.v1api.profile.dto.ProfileDto;
@@ -18,12 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -99,6 +104,34 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+
+    @Override
+    public List<ProfileDto> getAllProfiles(Instant timeStamp, int limit, Jwt jwtToken) {
+
+        try {
+            // Get my profile id to compare to each profile
+            Long myProfileId = getMyProfileModelId(jwtToken);
+
+            // Pageable helps implement infinite scrolling with the profileRepository
+            Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+            List<ProfileModel> profiles = profileRepository.findMyProfileAndOthersNotDeletedBeforeTimestamp(myProfileId, timeStamp, pageable);
+
+            // Map each post to a postDto
+            return profiles.stream()
+                    .map(profile -> profileMapper.fromProfileModelToProfileDto(profile, myProfileId))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+        } catch (InvalidJwtSubjectException ex) {
+            // will be logged at global controller exception handler
+            throw ex;
+        } catch (Exception ex) {
+            logger.error("ProfileServiceImpl getAllProfiles caught an unexpected exception", ex);
+            throw new GenericGetProfilesException(ex);
+        }
+    }
+
     @Override
     public ProfileDto getMyProfileDto(Jwt jwtToken) {
 
@@ -119,7 +152,7 @@ public class ProfileServiceImpl implements ProfileService {
                 pictureUrl = "";
             }
 
-            return new ProfileDto(myProfileModel.getId(), myProfileModel.getUsername(), pictureUrl, myProfileModel.getBio());
+            return new ProfileDto(myProfileModel.getId(), myProfileModel.getUsername(), pictureUrl, myProfileModel.getBio(), myProfileModel.getCreatedAt());
 
         } catch (InvalidJwtSubjectException ex) {
             // will be logged at global controller exception handler
@@ -196,7 +229,7 @@ public class ProfileServiceImpl implements ProfileService {
                 pictureUrl = "";
             }
 
-            return new ProfileDto(profileModel.getId(), profileModel.getUsername(), pictureUrl, profileModel.getBio());
+            return new ProfileDto(profileModel.getId(), profileModel.getUsername(), pictureUrl, profileModel.getBio(), profileModel.getCreatedAt());
 
         } catch (ProfileNotFoundException ex) {
             logger.warn("Profile not found for profileId: " + id);
