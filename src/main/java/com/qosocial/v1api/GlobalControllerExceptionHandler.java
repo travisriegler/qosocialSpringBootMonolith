@@ -100,6 +100,12 @@ public class GlobalControllerExceptionHandler {
         return new ResponseEntity<>(errorResponseDto, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ExpiredRefreshTokenException.class)
+    public ResponseEntity<Object> expiredRefreshTokenException(ExpiredRefreshTokenException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(NoRefreshTokenException.class)
     public ResponseEntity<Object> noRefreshTokenException(NoRefreshTokenException ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(Collections.singletonList(ex.getMessage()));

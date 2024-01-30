@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
         try {
 
             //Step 1: Decode the refresh token
-            Jwt jwt = jwtService.decodeRefreshToken(refreshToken); //can throw InvalidRefreshTokenException
+            Jwt jwt = jwtService.decodeRefreshToken(refreshToken); //can throw ExpiredRefreshTokenException or InvalidRefreshTokenException
 
             if (jwt == null) throw new InvalidRefreshTokenException();
 
@@ -137,22 +136,11 @@ public class AuthServiceImpl implements AuthService {
 
 
             //Step 2: Delete the refresh token
-            refreshTokenService.deleteRefreshToken(tokenId); //can throw GenericRefreshTokenException
+            refreshTokenService.deleteRefreshToken(tokenId); //can throw GenericDeleteRefreshTokenException
 
 
 
-            //Step 3: Check if the refresh token was expired
-            Instant expiresAt = jwt.getExpiresAt();
-
-            if (expiresAt == null) throw new InvalidRefreshTokenException();
-
-            Boolean isTokenExpired = jwtService.isTokenExpired(expiresAt);
-
-            if (isTokenExpired) throw new InvalidRefreshTokenException();
-
-
-
-            //Step 4: Create a new access token and refresh token
+            //Step 3: Create a new access token and refresh token
             String email = jwt.getClaimAsString("email");
 
             if (email == null || email.isEmpty()) throw new InvalidRefreshTokenException();
@@ -161,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + jwt.getSubject()));
 
             if (!appUserModel.isEnabled() || !appUserModel.isAccountNonExpired() || !appUserModel.isCredentialsNonExpired() || !appUserModel.isAccountNonLocked()) {
-                throw new InvalidRefreshTokenException();
+                throw new ExpiredRefreshTokenException();
             }
 
             String accessToken = jwtService.generateAccessToken(appUserModel.getId(), appUserModel.getEmail(), appUserModel.getRoleModels());
@@ -170,12 +158,12 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-            //Step 5: Save the new refresh token in the db
+            //Step 4: Save the new refresh token in the db
             refreshTokenService.saveRefreshToken(new RefreshTokenModel(refreshTokenDto.getTokenId(), refreshTokenDto.getExpirationTime(), appUserModel));
 
 
 
-            //Step 6: Return information
+            //Step 5: Return information
             //Convert Set<RoleModel> to Set<String> so it is easier for the frontend
             Set<String> scopeSet = appUserModel.getRoleModels().stream()
                     .map(RoleModel::getName)
@@ -190,10 +178,12 @@ public class AuthServiceImpl implements AuthService {
 
         } catch (GenericDeleteRefreshTokenException | GenericJwtGenerationException | GenericSaveRefreshTokenException ex) {
             //logged already
-            throw new InvalidRefreshTokenException(ex);
+            throw new ExpiredRefreshTokenException(ex);
+        } catch (ExpiredRefreshTokenException ex) {
+            throw ex;
         } catch (Exception ex) {
             logger.error("AuthServiceImpl refreshToken caught an unexpected error", ex);
-            throw new InvalidRefreshTokenException(ex);
+            throw new ExpiredRefreshTokenException(ex);
         }
     }
 

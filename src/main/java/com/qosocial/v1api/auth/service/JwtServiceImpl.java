@@ -1,6 +1,7 @@
 package com.qosocial.v1api.auth.service;
 
 import com.qosocial.v1api.auth.dto.RefreshTokenDto;
+import com.qosocial.v1api.auth.exception.ExpiredRefreshTokenException;
 import com.qosocial.v1api.auth.exception.GenericJwtGenerationException;
 import com.qosocial.v1api.auth.exception.InvalidRefreshTokenException;
 import com.qosocial.v1api.auth.model.RoleModel;
@@ -40,8 +41,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateAccessToken(Long id, String email, Set<RoleModel> roles) {
         try {
             Instant now = Instant.now();
-            //todo:change 1 back to 5
-            Instant later = now.plus(Duration.ofMinutes(1));
+            Instant later = now.plus(Duration.ofMinutes(5));
 
             String scope = roles.stream()
                     .map(RoleModel::getName)
@@ -97,6 +97,9 @@ public class JwtServiceImpl implements JwtService {
             // DOES NOT THROW AN EXCEPTION IF THE JWT IS EXPIRED, we must manually check this
             return refreshTokenJwtDecoder.decode(refreshToken);
         } catch (Exception ex) {
+            if (ex.getMessage().contains("expired")) {
+                throw new ExpiredRefreshTokenException(ex);
+            }
             logger.error("JwtServiceImpl decodeRefreshToken encountered an unexpected exception", ex);
             throw new InvalidRefreshTokenException(ex);
         }
