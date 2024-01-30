@@ -1,5 +1,7 @@
 package com.qosocial.v1api.profile.dto;
 
+import java.time.Instant;
+
 public class ProfileDto {
 
     private Long id;
@@ -9,14 +11,17 @@ public class ProfileDto {
 
     private String bio;
 
+    private Instant createdAt;
+
     public ProfileDto() {
     }
 
-    public ProfileDto(Long id, String username, String pictureUrl, String bio) {
+    public ProfileDto(Long id, String username, String pictureUrl, String bio, Instant createdAt) {
         this.id = id;
         this.username = username;
         this.pictureUrl = pictureUrl;
         this.bio = bio;
+        this.createdAt = createdAt;
     }
 
     public void setUsername(String username) {
@@ -49,5 +54,13 @@ public class ProfileDto {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -3,7 +3,7 @@ package com.qosocial.v1api.auth.exception;
 public class InvalidRefreshTokenException extends RuntimeException {
 
     public InvalidRefreshTokenException() {
-        super("Unauthorized, refresh token is expired or invalid");
+        super("Unauthorized, refresh token expired or invalid");
     }
 
     public InvalidRefreshTokenException(String message) {
@@ -15,6 +15,6 @@ public class InvalidRefreshTokenException extends RuntimeException {
     }
 
     public InvalidRefreshTokenException(Throwable cause) {
-        super("Unauthorized, refresh token is expired or invalid", cause);
+        super("Unauthorized, refresh token expired or invalid", cause);
     }
 }
