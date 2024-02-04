@@ -1,0 +1,256 @@
+repo_name: travisriegler/qosocialSpringBootMonolith
+report_id: 60084020e62cb1901b43d3e6c4cb86c8
+version: 0.1
+repo_type: Public
+timestamp: '2024-02-04T22:03:18+00:00'
+requested_by: travisriegler
+provider: github
+branch: main
+detected_tools_count: 20
+tools:
+- name: Java
+  description: A concurrent, class-based, object-oriented, language specifically designed
+    to have as few implementation dependencies as possible
+  website_url: https://www.java.com
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/995/K85ZWV2F.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith
+  detection_source: Repo Metadata
+- name: SQL
+  description: It is a domain-specific language used in programming
+  website_url: https://en.wikipedia.org/wiki/SQL
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/2271/default_068d33483bba6b81ee13fbd4dc7aab9780896a54.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/src/main/resources/db/migration/V1__createTestTable.sql
+  detection_source: src/main/resources/db/migration/V1__createTestTable.sql
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-11 19:16:31.000000000 Z
+- name: Spring Framework
+  description: An application framework and inversion of control container for the
+    Java platform
+  website_url: https://spring.io/projects/spring-framework
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Frameworks (Full Stack)
+  image_url: https://img.stackshare.io/service/2006/spring-framework-project-logo.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: H2 Database
+  description: A relational database management system written in Java
+  website_url: http://www.h2database.com/
+  open_source: false
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Databases
+  image_url: https://img.stackshare.io/service/3105/h2-logo_square_400x400.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 15:57:56.000000000 Z
+- name: Apache Maven
+  description: 'Apache build manager for Java projects. '
+  website_url: http://maven.apache.org/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Java Build Tools
+  image_url: https://img.stackshare.io/package_manager/977/default_9833f2ef0bbc2a946b4cc5e9307264033361076b.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/Dockerfile
+  detection_source: Dockerfile
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 17:57:41.000000000 Z
+- name: Docker
+  description: Enterprise Container Platform for High-Velocity Innovation.
+  website_url: https://www.docker.com/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Virtual Machine Platforms & Containers
+  image_url: https://img.stackshare.io/service/586/n4u37v9t_400x400.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith
+  detection_source: Repo Metadata
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith
+  detection_source: Repo Metadata
+- name: GitHub Actions
+  description: Automate your workflow from idea to production
+  website_url: https://github.com/features/actions
+  open_source: false
+  hosted_saas: true
+  category: Build, Test, Deploy
+  sub_category: Continuous Integration
+  image_url: https://img.stackshare.io/service/11563/actions.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/.github/workflows/dev.yaml
+  detection_source: ".github/workflows/dev.yaml"
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 16:30:04.000000000 Z
+- name: Logstash
+  description: Collect, Parse, &amp; Enrich Data
+  website_url: http://logstash.net/
+  open_source: true
+  hosted_saas: false
+  category: Monitoring
+  sub_category: Log Management
+  image_url: https://img.stackshare.io/service/1683/preview.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 15:57:56.000000000 Z
+- name: Apache Camel
+  description: A versatile open source integration framework
+  website_url: https://camel.apache.org/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Application Hosting
+  sub_category: Platform as a Service
+  image_url: https://img.stackshare.io/service/3276/xWt1RFo6_400x400.jpg
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/src/main/resources/application.properties
+  detection_source: src/main/resources/application.properties
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 15:57:56.000000000 Z
+- name: Alpine Linux
+  description: Security-oriented, lightweight Linux distribution based on musl libc
+    and busybox
+  website_url: https://www.alpinelinux.org/
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Operating Systems
+  image_url: https://img.stackshare.io/service/6429/alpine_linux.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/Dockerfile
+  detection_source: Dockerfile
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 17:57:41.000000000 Z
+- name: com.h2database:h2
+  description: H2 Database Engine
+  license: MIT-feh
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 15:57:56.000000000 Z
+- name: net.logstash.logback:logstash-logback-encoder
+  description: Logback encoder which will output events as Logstash-compatible JSON
+  version: '7.4'
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-08 15:57:56.000000000 Z
+- name: org.flywaydb:flyway-core
+  description: 'Flyway: Database Migrations Made Easy'
+  version: 9.22.3
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-data-jpa
+  description: Starter for using Spring Data JPA with Hibernate
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-test
+  description: Starter for testing Spring Boot applications with libraries including
+    JUnit
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-validation
+  description: Starter for using Java Bean Validation with Hibernate Validator
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-web
+  description: Starter for building web, including RESTful, applications using Spring
+    MVC
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: org.springframework.security:spring-security-test
+  description: Spring-security-test
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-26 21:34:21.000000000 Z
+- name: software.amazon.awssdk:s3
+  description: The AWS Java SDK for Amazon S3 module holds the client classes that
+    are used for communicating with Amazon Simple Storage Service
+  version: 2.23.3
+  open_source: false
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/travisriegler/qosocialSpringBootMonolith/blob/main/pom.xml
+  detection_source: pom.xml
+  last_updated_by: Travis Riegler
+  last_updated_on: 2024-01-18 13:47:15.000000000 Z
